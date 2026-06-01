@@ -38,6 +38,7 @@ import threading
 import numpy as np
 import rclpy
 from rclpy.node import Node
+from raft_flow_msgs.msg import FlowMean
 from sensor_msgs.msg import Image
 from std_msgs.msg import Header
 from cv_bridge import CvBridge
@@ -63,9 +64,10 @@ class RaftFlowNode(Node):
         self._sub = self.create_subscription(
             Image, 'flir/image_raw', self._image_callback, 1)
 
-        self._pub_flow     = self.create_publisher(Image, 'raft/flow', 10)
-        self._pub_flow_viz = self.create_publisher(Image, 'raft/flow_viz', 10)
-        self._pub_quiver   = self.create_publisher(Image, 'raft/quiver_viz', 10)
+        # self._pub_flow   = self.create_publisher(Image, 'raft/flow', 10)  # 픽셀별 dense flow (32FC2)
+        self._pub_flow_mean = self.create_publisher(FlowMean, 'raft/flow_mean', 10)
+        self._pub_flow_viz  = self.create_publisher(Image, 'raft/flow_viz', 10)
+        self._pub_quiver    = self.create_publisher(Image, 'raft/quiver_viz', 10)
 
         # 콜백 스레드 → 추론 스레드 간 프레임 전달 큐
         # maxsize=1: 추론이 느려도 최신 프레임만 유지하고 오래된 건 버림
@@ -324,11 +326,20 @@ class RaftFlowNode(Node):
                 header = Header(stamp=self.get_clock().now().to_msg(),
                                 frame_id=p['frame_id'])
 
-                # /raft/flow  — 32FC2: ch0=u(수평), ch1=v(수직), 단위: 픽셀/프레임
                 flow_np = flow_up[0].permute(1, 2, 0).cpu().numpy().astype(np.float32)
-                flow_msg = self._bridge.cv2_to_imgmsg(flow_np, encoding='32FC2')
-                flow_msg.header = header
-                self._pub_flow.publish(flow_msg)
+
+                # /raft/flow  — 픽셀별 dense flow (32FC2, ch0=u, ch1=v) — 필요 시 주석 해제
+                # flow_msg = self._bridge.cv2_to_imgmsg(flow_np, encoding='32FC2')
+                # flow_msg.header = header
+                # self._pub_flow.publish(flow_msg)
+
+                # /raft/flow_mean  — 프레임 전체 픽셀의 평균 flow 벡터
+                # u=수평 평균, v=수직 평균, 단위: 픽셀/프레임
+                mean_msg = FlowMean()
+                mean_msg.header = header
+                mean_msg.u = float(flow_np[..., 0].mean())
+                mean_msg.v = float(flow_np[..., 1].mean())
+                self._pub_flow_mean.publish(mean_msg)
 
                 # /raft/flow_viz  — GPU 컬러휠 시각화
                 if p['pub_flow_viz']:

@@ -12,6 +12,7 @@
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
   <depend>cv_bridge</depend>
+  <depend>raft_flow_msgs</depend>
 
   <buildtool_depend>ament_python</buildtool_depend>
 
