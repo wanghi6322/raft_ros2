@@ -1,0 +1,50 @@
+# raft_flow 패키지 공통 파라미터 파일
+# 대상 환경: Jetson Orin AGX, JetPack 6.2.2, 시스템 Python (no conda)
+
+# ══════════════════════════════════════════════════════════
+#  FLIR 카메라 드라이버 노드
+# ══════════════════════════════════════════════════════════
+flir_camera_node:
+  ros__parameters:
+    width:    2048    # Blackfly S 최대 해상도 너비
+    height:   1536    # Blackfly S 최대 해상도 높이
+    fps:      30.0    # 목표 프레임레이트 (카메라 지원 최대값 이하로 자동 조정)
+    frame_id: "flir_camera"
+
+# ══════════════════════════════════════════════════════════
+#  RAFT 광학 흐름 추론 노드
+# ══════════════════════════════════════════════════════════
+raft_flow_node:
+  ros__parameters:
+    # RAFT 소스 디렉토리 (core/ 폴더가 있는 상위 디렉토리)
+    raft_path:  "/home/hd/raft"
+
+    # 사전학습 가중치 경로
+    # 선택지: raft-things.pth  raft-sintel.pth  raft-kitti.pth  raft-small.pth
+    model_path: "/home/hd/raft/models/raft-things.pth"
+
+    # 센터 크롭 (0 = 비활성)
+    # 2048x1536 전체 해상도는 추론 속도가 느리므로 크롭 권장
+    # RAFT 요건: 8의 배수여야 함
+    crop_width:  1024
+    crop_height: 768
+
+    # RAFT 반복 횟수 — 많을수록 정확하지만 속도↓
+    # Jetson Orin AGX 기준: iters=12 → ~5fps, iters=20 → ~3fps (2048x1536 기준)
+    iters: 20
+
+    # 모델 옵션
+    small:           false   # true → raft-small.pth 와 함께 사용
+    mixed_precision: false    # FP16 혼합 정밀도 (Jetson Ampere에서 속도↑)
+    alternate_corr:  false
+
+    # Quiver 시각화 설정 (/raft/quiver_viz)
+    quiver_step:      24     # 화살표 간격 (픽셀)
+    quiver_scale:     2.0    # 화살표 길이 배율
+    quiver_thickness: 1      # 화살표 두께
+
+    # 토픽 발행 선택 — false로 끄면 CPU/대역폭 절감
+    publish_flow_viz: true   # /raft/flow_viz  (GPU, 부하 낮음)
+    publish_quiver:   false  # /raft/quiver_viz (CPU, 느림)
+
+    frame_id: "flir_camera"

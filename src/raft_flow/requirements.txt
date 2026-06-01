@@ -1,0 +1,54 @@
+# ============================================================
+#  raft_flow ROS 2 패키지 의존성 목록
+#  대상 환경: Jetson Orin AGX, JetPack 6.2.2, 시스템 Python 3.10
+# ============================================================
+#
+# [설치 순서]
+#  1. ROS 2 Humble (apt)          → sudo apt install ros-humble-desktop
+#  2. cv_bridge (apt)             → sudo apt install ros-humble-cv-bridge
+#  3. Spinnaker SDK (FLIR 공식)   → install_spinnaker.sh 실행 후 whl 설치
+#  4. PyTorch (NVIDIA Jetson 전용) → 아래 주석 참고
+#  5. 나머지 패키지 (pip)         → pip install -r requirements.txt
+#
+# ============================================================
+
+# ── PyTorch (Jetson 전용 설치 방법) ──────────────────────────
+# JetPack 6.x 에서는 pip install torch 가 x86 버전을 받아 실행 불가.
+# 반드시 NVIDIA 공식 Jetson PyTorch 페이지에서 wheel(.whl)을 받아 설치:
+#   https://developer.nvidia.com/embedded/downloads#?search=pytorch
+#
+#   pip install torch-*.whl torchvision-*.whl
+#
+# 설치 확인:
+#   python3 -c "import torch; print(torch.cuda.is_available())"
+# ─────────────────────────────────────────────────────────────
+
+# ── PySpin / Spinnaker SDK ───────────────────────────────────
+# pip install 로 받을 수 없음. FLIR(Teledyne) 공식 사이트에서 받아 설치:
+#   1. Spinnaker SDK .tar.gz 다운로드 → sudo ./install_spinnaker.sh
+#   2. spinnaker_python-<ver>-<pyver>-linux_aarch64.whl 다운로드 → pip install *.whl
+#   3. USB 권한: sudo /opt/spinnaker/bin/configure_usbfs.sh
+# ─────────────────────────────────────────────────────────────
+
+# ── pip 로 설치 가능한 패키지 ──────────────────────────────────
+
+# 수치 연산 (JetPack 6.2.2에 numpy 1.x 내장, 호환성 위해 버전 범위 지정)
+numpy>=1.24.0,<2.0.0
+
+# 영상 처리 (JetPack 내장 OpenCV와 충돌 방지: headless 버전 권장)
+# 주의: JetPack에 CUDA-OpenCV가 이미 설치된 경우 아래 줄을 주석 처리하세요
+opencv-python-headless>=4.7.0
+
+# 과학 연산 (scipy는 RAFT 평가 스크립트에서 사용)
+scipy>=1.10.0
+
+# 시각화 (matplotlib은 RAFT 데모에서 사용)
+matplotlib>=3.7.0
+
+# ── ROS 2 관련 (apt 설치 권장, pip 미사용) ────────────────────
+# rclpy              → apt: ros-humble-rclpy
+# sensor_msgs        → apt: ros-humble-sensor-msgs
+# geometry_msgs      → apt: ros-humble-geometry-msgs
+# std_msgs           → apt: ros-humble-std-msgs
+# cv_bridge          → apt: ros-humble-cv-bridge
+# launch_ros         → apt: ros-humble-launch-ros
