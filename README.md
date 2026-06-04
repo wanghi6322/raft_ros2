@@ -198,6 +198,17 @@ colcon build --symlink-install
 
 ### 4. 실행
 
+RAFT 원본 모델과 소스 코드 다운 받았다면
+launch_raft_flow.sh 안에서 수정할 곳은 딱 한 줄입니다.
+
+# 이 줄에서 본인의 venv 경로로만 바꾸면 됩니다
+VENV_SITE=/home/hd/raft_venv/lib/python3.10/site-packages
+
+그리고 params.yaml에서도 두 곳을 수정해야 합니다.
+
+raft_path:  "/home/hd/raft"                          # ← 본인의 RAFT 경로
+model_path: "/home/hd/raft/models/raft-things.pth"  # ← 본인의 모델 경로
+즉 launch_raft_flow.sh 1줄 + params.yaml 2줄, 총 3줄만 본인 환경에 맞게 고치면 바로 실행 가능합니다.
 ```bash
 # launch_raft_flow.sh 안의 PYTHONPATH 경로를 자신의 venv 경로로 수정 후:
 ~/raft_ws/launch_raft_flow.sh
