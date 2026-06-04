@@ -23,11 +23,6 @@ def generate_launch_description():
             default_value=default_cfg,
             description='파라미터 YAML 파일 경로',
         ),
-        DeclareLaunchArgument(
-            'model_path',
-            default_value='/home/hd/raft/models/raft-things.pth',
-            description='RAFT 모델 가중치 (.pth) 경로',
-        ),
 
         # ── 카메라 드라이버 ──
         Node(
@@ -44,9 +39,6 @@ def generate_launch_description():
             executable='raft_flow_node',
             name='raft_flow_node',
             output='screen',
-            parameters=[
-                LaunchConfiguration('params_file'),
-                {'model_path': LaunchConfiguration('model_path')},
-            ],
+            parameters=[LaunchConfiguration('params_file')],
         ),
     ])
