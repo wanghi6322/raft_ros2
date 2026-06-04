@@ -38,7 +38,9 @@ ros2 launch raft_flow raft_flow.launch.py
 **RAFT 원본 코드를 수정하지 않았습니다.**  
 `raft_flow_node.py`에서 `sys.path`에 RAFT `core/` 디렉토리를 추가해  
 원본 그대로 import합니다.
-
+raft 원본 깃허브
+https://github.com/princeton-vl/raft
+에서 RAFT 모델 가중치와 소스코드 직접 받아야 합니다.
 ```python
 sys.path.insert(0, os.path.join(raft_path, 'core'))
 from raft import RAFT  # ~/raft/core/raft.py 원본 그대로 사용
