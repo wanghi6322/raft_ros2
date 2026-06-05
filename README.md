@@ -163,7 +163,7 @@ raft_flow_node:
 ### 1. ROS 2 패키지 설치
 
 ```bash
-sudo apt install ros-humble-desktop ros-humble-cv-bridge
+sudo apt install ros-humble-desktop ros-humble-cv-bridge python3-colcon-common-extensions
 ```
 
 ### 2. Spinnaker SDK 및 PySpin 설치 (최초 1회)
