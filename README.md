@@ -179,8 +179,29 @@ pip install numpy opencv-python-headless scipy matplotlib
 # PySpin: Spinnaker SDK 설치 후 wheel 설치 (requirements.txt 참고)
 ```
 
-### 2. FLIR 카메라 권한 설정 (최초 1회)
+### 2. FLIR 카메라 설정 (최초 1회)
 
+#### 2-1. Spinnaker SDK 설치
+FLIR 공식 사이트에서 JetPack용 Spinnaker SDK 다운로드 후 설치합니다.
+```bash
+tar -xvf spinnaker-*.tar.gz
+cd spinnaker-*/
+sudo sh install_spinnaker_arm.sh   # Jetson (ARM64)
+```
+
+#### 2-2. PySpin Python 바인딩 설치
+FLIR 공식 사이트에서 Python 버전에 맞는 wheel 파일 다운로드 후 설치합니다.
+```bash
+pip install spinnaker_python-*-cp310-cp310-linux_aarch64.whl
+```
+
+#### 2-3. USB 버퍼 크기 설정
+고해상도 카메라 사용 시 프레임 타임아웃 방지를 위해 필요합니다.
+```bash
+sudo sh -c 'echo 1000 > /sys/module/usbcore/parameters/usbfs_memory_mb'
+```
+
+#### 2-4. 카메라 USB 권한 설정
 ```bash
 sudo groupadd flirimaging
 sudo usermod -aG flirimaging $USER
