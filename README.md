@@ -209,6 +209,26 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 # 이후 로그아웃 → 재로그인
 ```
 
+#### 2-5. 카메라 연결 확인
+
+USB 연결 확인:
+```bash
+lsusb | grep -i "Point Grey\|FLIR\|Teledyne"
+# 출력 예: Bus 002 Device 004: ID 1e10:3300 Point Grey Research, Inc.
+```
+
+PySpin으로 카메라 인식 확인:
+```python
+import PySpin
+system = PySpin.System.GetInstance()
+cam_list = system.GetCameras()
+print(f"감지된 카메라 수: {cam_list.GetSize()}")  # 1 이상이면 정상
+cam_list.Clear()
+system.ReleaseInstance()
+```
+
+> `lsusb`에는 보이는데 카메라 수가 0이면 권한 문제입니다. 로그아웃 → 재로그인 후 다시 확인하세요.
+
 ### 3. 빌드
 
 ```bash
